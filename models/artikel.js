@@ -1,26 +1,47 @@
-"use strict";
-import { Model } from "sequelize";
-module.exports = (sequelize, DataTypes) => {
-  class Artikel extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
-  }
-  Artikel.init(
-    {
-      artikelId: DataTypes.INTEGER,
-      title: DataTypes.STRING,
-      content: DataTypes.TEXT,
+import { DataTypes } from "sequelize";
+import { db } from "../config/db.js";
+
+const Article = db.define(
+  "artikels",
+  {
+    artikelId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    {
-      sequelize,
-      modelName: "Artikel",
-    }
-  );
-  return Artikel;
-};
+    title: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    publisherId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    kategori: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    image: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default Article;

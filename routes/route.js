@@ -1,12 +1,30 @@
 import { getUsers } from "../controller/Users.js";
-import  Express  from "express";
+import { getArticle, insertArticke } from "../controller/Artikel.js";
+import Express from "express";
+import multer from "multer";
 
-const route = Express.Router()
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads"); // Menentukan folder penyimpanan gambar
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const extension = file.originalname.split(".").pop();
+    cb(null, uniqueSuffix + "." + extension); // Menentukan nama file gambar yang unik
+  },
+});
+
+const upload = multer({ storage: storage });
 
 
-route.get('/users',getUsers);
+const route = Express.Router();
 
 
 
+route.get("/users", getUsers);
+route.post("/artikel", upload.single("image"), insertArticke);
+route.get("/artikel", getArticle);
 
-export default route
+
+
+export default route;

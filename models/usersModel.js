@@ -1,11 +1,11 @@
 import {Sequelize} from 'sequelize'
-import db from "../config/db.js"
+import { db } from '../config/db.js';
 
 
 const {DataTypes} = Sequelize;
 
 
-const Users = db.define('Users',{
+const Users = db.define('users',{
     username:{
         type:DataTypes.STRING
     },
@@ -13,12 +13,13 @@ const Users = db.define('Users',{
         type:DataTypes.STRING
     },
     password:{
-        type:DataTypes.STRING
+        type:DataTypes.TEXT
     },
     refresh_token:{
         type:DataTypes.TEXT
     },
 },{
+    timestamps: true,
     freezeTableName:true
 })
 

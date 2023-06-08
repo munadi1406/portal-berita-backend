@@ -1,16 +1,24 @@
-import Express from "express";
-import db from "./config/db.js";
+// import Express from "express";
+import express from "express";
+import cors from 'cors';
+import connection from "./config/db.js";
+import route from './routes/route.js'
 
-const app = Express();
+const app = express();
 
 
 try{
-  await db.authenticate()
-  db.sync()
-  console.log('database terkoneksi')
+  await connection()
+  console.log('database terkoneksi');
 }catch(error){
   console.log({error})
 }
+
+
+app.use(cors({credentials:true,origin:'http://localhost:3000'}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(route);
 
 
 

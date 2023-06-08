@@ -10,8 +10,9 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
-      username: {
-        type: Sequelize.STRING
+      kategori: {
+        type: Sequelize.STRING(50),
+        allowNull:false
       }
       });
   },

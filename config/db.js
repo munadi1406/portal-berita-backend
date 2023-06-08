@@ -1,15 +1,27 @@
 import { Sequelize } from "sequelize";
 
 
-const db = new Sequelize('portalberita','munadi1406','munadi1406!',{
-  host:'db4free.net',
-  dialect:'mysql',
+export const db = new Sequelize('portalberita', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
   pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
-      }
-})
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  },
+  retry: {
+    max: 3 // Jumlah maksimal percobaan koneksi ulang
+  }
+});
 
-export default db
+const connection = async ()=>{
+  try{
+    await db.authenticate()
+  }catch(error){
+    
+  }
+}
+
+
+export default connection

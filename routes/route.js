@@ -1,4 +1,4 @@
-import { getUsers } from "../controller/Users.js";
+import { getUsers ,auth,register} from "../controller/Users.js";
 import { getArticle, insertArticke } from "../controller/Artikel.js";
 import Express from "express";
 import multer from "multer";
@@ -22,8 +22,12 @@ const route = Express.Router();
 
 
 route.get("/users", getUsers);
+route.post('/login',auth);
+route.post('/register',register);
 route.post("/artikel", upload.single("image"), insertArticke);
 route.get("/artikel", getArticle);
+// route.get("/artikel/:title", getArticleByTitle);
+
 
 
 

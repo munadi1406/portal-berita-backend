@@ -3,6 +3,8 @@ import express from "express";
 import cors from 'cors';
 import connection from "./config/db.js";
 import route from './routes/route.js'
+import "dotenv/config.js"
+
 
 const app = express();
 

@@ -9,9 +9,11 @@ export const getUsers = async (req, res) => {
     if (data) {
       return res.status(200).json({ data });
     } else {
-      return res.status(404);
+      return res.status(404).json({msg:"Not Found"});
     }
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({msg:"Koneksi Error"})
+  }
 };
 
 export const register = async (req, res) => {
@@ -113,7 +115,7 @@ export const auth = async (req, res) => {
     let refreshToken;
     try {
       jwtCheck = jwt.verify(authCheck.refresh_token, refreshTokenKey);
-      refreshToken = authCheck.refreshToken;
+      refreshToken = authCheck.refresh_token;
     } catch (error) {
       refreshToken = jwt.sign({ idUsers, username, emaill }, refreshTokenKey, {
         expiresIn: "5d",

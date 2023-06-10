@@ -29,6 +29,10 @@ const Article = db.define(
     publisherId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: 'Users', // Nama model yang diacu (dalam hal ini, 'Publisher')
+        key: 'id', // Nama kolom kunci primer pada model yang diacu
+      },
     },
     kategori: {
       type: DataTypes.TEXT,

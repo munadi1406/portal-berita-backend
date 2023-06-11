@@ -40,3 +40,20 @@ export const deleteKategori = async (req,res)=>{
         return res.status(500).json({msg:"Terjadi Kesalahan"})
     }
 }
+
+
+export const updateKategori = async (req,res) =>{
+    try {
+        const {id,kategori } = req.body
+        if(!validator.isNumeric(id)) return res.status(500).json({msg:"id yang anda masukkan bukan angka"})
+        if(!validator.isAlpha(kategori)) return res.status(500).json({msg:"Kategori Tidak Boleh Mengandung Angka,Spasi,Dan Karekter Khusus"})
+        await Kategori.update({kategori},{
+            where:{id}
+        })
+
+        return res.status(201).json({msg:"Kategori Berhasil Di Di Update"})
+
+    } catch (error) {
+        return res.status(500).json({msg:"Internal Server Error"})
+    }
+}

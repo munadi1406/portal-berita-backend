@@ -2,7 +2,7 @@ import { getUsers ,auth,register} from "../controller/Users.js";
 import { getArticle, insertArticke,getArticleByTitle, deleteArticle, showImage } from "../controller/Artikel.js";
 import Express from "express";
 import multer from "multer";
-import { deleteKategori, getKategori, insertKategori } from "../controller/Kategori.js";
+import { deleteKategori, getKategori, insertKategori, updateKategori } from "../controller/Kategori.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -35,6 +35,7 @@ route.get("/artikel/:title", getArticleByTitle);
 
 route.get('/kategori',getKategori)
 route.post('/kategori',insertKategori)
+route.put('/kategori',updateKategori)
 route.delete('/kategori/:id',deleteKategori)
 
 

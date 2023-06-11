@@ -35,8 +35,14 @@ export const insertArticke = async (req, res) => {
     const image = req.file;
     const baseUrl = process.env.BASE_URL;
 
-    if(!validator.isAlphanumeric(title)) return res.status(500).json({msg:"Title Harus Berupa Huruf dan angka saja"})
-    if(!validator.isAlphanumeric(prolog)) return res.status(500).json({msg:"Prolog Harus Di Title Harus Berupa Huruf dan angka saja"})
+    if (!validator.isAlphanumeric(title.replace(/\s/g, ''))) {
+      return res.status(500).json({ msg: 'Title Harus Berupa Huruf, angka, dan spasi saja' });
+    }
+    
+    if (!validator.isAlphanumeric(prolog.replace(/\s/g, ''))) {
+      return res.status(500).json({ msg: 'Prolog Harus Berupa Huruf, angka, dan spasi saja' });
+    }
+    
     if(!content) return res.status(500).json({msg:"Content Harus Di Isi"})
     if(!validator.isAlpha(kategori)) return res.status(500).json({msg:"Kategori Hanya Berupa Huruf"})
     if(!image) return res.status(500).json({msg:"Masukkan Gambar"})

@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // Periode waktu dalam milidetik (di sini 15 menit)
-  max: 60, // Jumlah maksimal permintaan dalam periode waktu yang sama
+  max: 200, // Jumlah maksimal permintaan dalam periode waktu yang sama
   message: 'Terlalu banyak permintaan dari IP Anda. Coba lagi nanti.',
 });
 

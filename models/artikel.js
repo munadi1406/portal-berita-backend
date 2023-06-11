@@ -43,7 +43,7 @@ const Article = db.define(
       allowNull: false,
     },
     prolog:{
-      type:DataTypes.STRING,
+      type:DataTypes.TEXT,
       allowNull:false
     }
   },

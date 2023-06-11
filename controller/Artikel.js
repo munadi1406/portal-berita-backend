@@ -7,7 +7,7 @@ import fs from "fs";
 export const getArticle = async (req, res) => {
   try {
     const { page } = req.params;
-    if(!validator.isNumeric(page)) return res.status(500).json({msg:"Parameter Harus Angka"})
+    if (!validator.isNumeric(page)) return res.status(500).json({ msg: "Parameter Harus Angka" })
     const limit = 10;
     const data = await Article.findAndCountAll({
       offset: (page - 1) * limit,
@@ -31,21 +31,21 @@ export const getArticle = async (req, res) => {
 
 export const insertArticke = async (req, res) => {
   try {
-    const { title, content,prolog, kategori } = req.body;
+    const { title, content, prolog, kategori } = req.body;
     const image = req.file;
     const baseUrl = process.env.BASE_URL;
 
-    if (!validator.isAlphanumeric(title.replace(/\s/g, ''))) {
-      return res.status(500).json({ msg: 'Title Harus Berupa Huruf, angka, dan spasi saja' });
+    if (!title) {
+      return res.status(500).json({ msg: 'Title Harus Di Isi' });
     }
-    
-    if (!validator.isAlphanumeric(prolog.replace(/\s/g, ''))) {
+
+    if (!prolog) {
       return res.status(500).json({ msg: 'Prolog Harus Berupa Huruf, angka, dan spasi saja' });
     }
-    
-    if(!content) return res.status(500).json({msg:"Content Harus Di Isi"})
-    if(!validator.isAlpha(kategori)) return res.status(500).json({msg:"Kategori Hanya Berupa Huruf"})
-    if(!image) return res.status(500).json({msg:"Masukkan Gambar"})
+
+    if (!content) return res.status(500).json({ msg: "Content Harus Di Isi" })
+    if (!validator.isAlpha(kategori)) return res.status(500).json({ msg: "Kategori Hanya Berupa Huruf" })
+    if (!image) return res.status(500).json({ msg: "Masukkan Gambar" })
 
 
     const imagePath = image ? `${baseUrl}/image/${image.filename}` : null;

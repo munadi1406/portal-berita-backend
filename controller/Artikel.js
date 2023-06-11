@@ -31,11 +31,16 @@ export const getArticle = async (req, res) => {
 
 export const insertArticke = async (req, res) => {
   try {
-    const { title, content, kategori } = req.body;
+    const { title, content,prolog, kategori } = req.body;
     const image = req.file;
     const baseUrl = process.env.BASE_URL;
 
-    console.log({ image });
+    if(!validator.isAlphanumeric(title)) return res.status(500).json({msg:"Title Harus Berupa Huruf dan angka saja"})
+    if(!validator.isAlphanumeric(prolog)) return res.status(500).json({msg:"Prolog Harus Di Title Harus Berupa Huruf dan angka saja"})
+    if(!content) return res.status(500).json({msg:"Content Harus Di Isi"})
+    if(!validator.isAlpha(kategori)) return res.status(500).json({msg:"Kategori Hanya Berupa Huruf"})
+    if(!image) return res.status(500).json({msg:"Masukkan Gambar"})
+
 
     const imagePath = image ? `${baseUrl}/image/${image.filename}` : null;
     const formattedImagePath = imagePath ? imagePath.replace(/\\/g, "/") : null;
@@ -45,6 +50,7 @@ export const insertArticke = async (req, res) => {
       image: formattedImagePath,
       kategori,
       publisherId: 1,
+      prolog
     };
 
     const insertData = await Article.create(data);
@@ -66,7 +72,7 @@ export const getArticleByTitle = async (req, res) => {
     console.log(formattedTitle);
 
     const formattedTitleWithoutSpaces = formattedTitle.replace(/\s/g, ""); // Menghapus spasi menggunakan regex
-    if (!title || !validator.isAlphanumeric(formattedTitleWithoutSpaces))
+    if (!title || !formattedTitleWithoutSpaces)
       return res.status(404).json({ msg: "Not Found" });
     Article.belongsTo(Users, { foreignKey: "publisherId" });
     const data = await Article.findAll({
@@ -91,7 +97,7 @@ export const getArticleByTitle = async (req, res) => {
     return res.status(200).json({ data });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ msg: "Not Found" });
+    return res.status(500).json({ msg: "Internal Server Error" });
   }
 };
 

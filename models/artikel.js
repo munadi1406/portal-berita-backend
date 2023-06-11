@@ -42,6 +42,10 @@ const Article = db.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    prolog:{
+      type:DataTypes.STRING,
+      allowNull:false
+    }
   },
   {
     timestamps: true,

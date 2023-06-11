@@ -129,13 +129,8 @@ export const auth = async (req, res) => {
         }
       );
     }
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
-    res.set("Authorization", `Bearer ${refreshToken}`);
-
-    return res.status(200).json({ accessToken });
-  } catch (error) {}
+    return res.status(200).json({ accessToken,refreshToken });
+  } catch (error) {
+    return res.status(500).json({msg:"internal server error"})
+  }
 };

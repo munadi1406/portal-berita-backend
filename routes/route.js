@@ -27,7 +27,7 @@ route.post('/login',auth);
 route.post('/register',register);
 
 route.post("/artikel", upload.single("image"), insertArticke);
-route.get("/artikel", getArticle);
+route.get("/artikelpost/:page", getArticle);
 route.get("/image/:image",showImage)
 
 route.delete("/artikel/:artikelId", deleteArticle);

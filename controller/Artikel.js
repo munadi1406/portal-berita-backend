@@ -1,18 +1,32 @@
-import path from 'path';
+import path from "path";
 import Article from "../models/artikel.js";
 import Users from "../models/usersModel.js";
 import validator from "validator";
-import fs from 'fs';
+import fs from "fs";
 
 export const getArticle = async (req, res) => {
   try {
-    const data = await Article.findAll({ order: [["createdAt", "desc"]] });
+    const { page } = req.params;
+    if(!validator.isNumeric(page)) return res.status(500).json({msg:"Parameter Harus Angka"})
+    const limit = 10;
+    const data = await Article.findAndCountAll({
+      offset: (page - 1) * limit,
+      limit: limit,
+      order: [["createdAt", "desc"]],
+    });
+    const totalPages = Math.ceil(data.count / limit);
     if (data) {
-      return res.status(200).json({ data });
-    } else {
-      return res.status(404);
+      return res
+        .status(200)
+        .json({
+          totalPages: totalPages,
+          currentPage: parseInt(page),
+          data: data.rows,
+        });
     }
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ msg: 'Internal server error' });
+  }
 };
 
 export const insertArticke = async (req, res) => {
@@ -89,11 +103,11 @@ export const deleteArticle = async (req, res) => {
       return res.status(500).json({ msg: "Gagal Menghapus Artikel" });
 
     const data = await Article.findOne({ where: { artikelId } });
-    console.log(data)
+    console.log(data);
     const fileName = path.basename(data.image);
     fs.unlinkSync(`uploads/${fileName}`);
 
-    await Article.destroy({where:{artikelId:data.artikelId}})
+    await Article.destroy({ where: { artikelId: data.artikelId } });
 
     return res.status(200).json({ message: "Artikel berhasil dihapus" });
   } catch (error) {
@@ -102,15 +116,13 @@ export const deleteArticle = async (req, res) => {
   }
 };
 
-
 export const showImage = async (req, res) => {
   try {
     const { image } = req.params;
-    const imagePath = path.join(process.cwd(), 'uploads', image);
+    const imagePath = path.join(process.cwd(), "uploads", image);
 
     res.sendFile(imagePath);
   } catch (error) {
     console.log(error);
   }
 };
-

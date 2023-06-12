@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { db } from "../config/db.js";
+import Users from "./usersModel.js";
 
 const Article = db.define(
   "artikels",
@@ -19,12 +20,10 @@ const Article = db.define(
       allowNull: true,
     },
     createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
+      type: DataTypes.DATE(6),
     },
     updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
+      type: DataTypes.DATE(6),
     },
     publisherId: {
       type: DataTypes.INTEGER,
@@ -51,5 +50,5 @@ const Article = db.define(
     timestamps: true,
   }
 );
-
+Article.belongsTo(Users, { foreignKey: 'publisherId', as: 'user' });
 export default Article;

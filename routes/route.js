@@ -1,5 +1,5 @@
 import { getUsers ,auth,register} from "../controller/Users.js";
-import { getArticle, insertArticke,getArticleByTitle, deleteArticle, showImage } from "../controller/Artikel.js";
+import { getArticle, insertArticke,getArticleByTitle, deleteArticle, showImage, getArticleById } from "../controller/Artikel.js";
 import Express from "express";
 import multer from "multer";
 import { deleteKategori, getKategori, insertKategori, updateKategori } from "../controller/Kategori.js";
@@ -29,9 +29,10 @@ route.post('/register',register);
 route.post("/artikel", upload.single("image"), insertArticke);
 route.get("/artikelpost/:page", getArticle);
 route.get("/image/:image",showImage)
-
 route.delete("/artikel/:artikelId", deleteArticle);
 route.get("/artikel/:title", getArticleByTitle);
+route.get("/artikelById/:id/:page", getArticleById);
+
 
 route.get('/kategori',getKategori)
 route.post('/kategori',insertKategori)

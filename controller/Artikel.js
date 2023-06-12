@@ -7,7 +7,8 @@ import fs from "fs";
 export const getArticle = async (req, res) => {
   try {
     const { page } = req.params;
-    if (!validator.isNumeric(page)) return res.status(500).json({ msg: "Parameter Harus Angka" })
+    if (!validator.isNumeric(page))
+      return res.status(500).json({ msg: "Parameter Harus Angka" });
     const limit = 10;
     const data = await Article.findAndCountAll({
       offset: (page - 1) * limit,
@@ -16,37 +17,35 @@ export const getArticle = async (req, res) => {
     });
     const totalPages = Math.ceil(data.count / limit);
     if (data) {
-      return res
-        .status(200)
-        .json({
-          totalPages: totalPages,
-          currentPage: parseInt(page),
-          data: data.rows,
-        });
+      return res.status(200).json({
+        totalPages: totalPages,
+        currentPage: parseInt(page),
+        data: data.rows,
+      });
     }
   } catch (error) {
-    res.status(500).json({ msg: 'Internal server error' });
+    res.status(500).json({ msg: "Internal server error" });
   }
 };
 
 export const insertArticke = async (req, res) => {
   try {
-    const { title, content, prolog, kategori } = req.body;
+    const { publisherId, title, prolog, content, kategori } = req.body;
     const image = req.file;
     const baseUrl = process.env.BASE_URL;
-
-    if (!title) {
-      return res.status(500).json({ msg: 'Title Harus Di Isi' });
-    }
-
-    if (!prolog) {
-      return res.status(500).json({ msg: 'Prolog Harus Berupa Huruf, angka, dan spasi saja' });
-    }
-
-    if (!content) return res.status(500).json({ msg: "Content Harus Di Isi" })
-    if (!validator.isAlpha(kategori)) return res.status(500).json({ msg: "Kategori Hanya Berupa Huruf" })
-    if (!image) return res.status(500).json({ msg: "Masukkan Gambar" })
-
+    if (!publisherId || !validator.isNumeric(publisherId))
+      return res.status(400).json({ msg: "Publisher id harus angka" });
+    if (!title || !validator.isAscii(title.replace(/\s/g, "")))
+      return res.status(400).json({ msg: "Title tidak valid" });
+    if (!prolog || !validator.isAscii(prolog))
+      return res.status(400).json({ msg: "Prolog tidak valid" });
+    if (!content) return res.status(400).json({ msg: "Content Harus Di Isi" });
+    if (!kategori || !validator.isAlpha(kategori.replace(",", "")))
+      return res
+        .status(400)
+        .json({ msg: "Kategori Hanya Berupa Huruf dan Tanda Koma" });
+    if (!image || !validator.isMimeType(image.mimetype))
+      return res.status(400).json({ msg: "Masukkan Gambar Yang valid" });
 
     const imagePath = image ? `${baseUrl}/image/${image.filename}` : null;
     const formattedImagePath = imagePath ? imagePath.replace(/\\/g, "/") : null;
@@ -55,18 +54,16 @@ export const insertArticke = async (req, res) => {
       content,
       image: formattedImagePath,
       kategori,
-      publisherId: 1,
-      prolog
+      publisherId,
+      prolog,
     };
-
     const insertData = await Article.create(data);
     if (!insertData) {
       return res.status(500).json({ error: "Gagal membuat artikel" });
     }
-
     return res.status(201).json({ msg: "Artikel berhasil dibuat" });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return res.status(500).json({ error: "Gagal membuat artikel" });
   }
 };
@@ -74,12 +71,15 @@ export const insertArticke = async (req, res) => {
 export const getArticleByTitle = async (req, res) => {
   try {
     const { title } = req.params;
-    const formattedTitle = title.split("-").join(" ");
-    console.log(formattedTitle);
+    if (!title || !validator.isAscii(title))
+      return res.status(400).json({ msg: "Title tidak valid" });
 
-    const formattedTitleWithoutSpaces = formattedTitle.replace(/\s/g, ""); // Menghapus spasi menggunakan regex
-    if (!title || !formattedTitleWithoutSpaces)
+    const formattedTitle = title.split("-").join(" ");
+    const formattedTitleWithoutSpaces = formattedTitle.replace(/\s/g, "");
+
+    if (!formattedTitleWithoutSpaces)
       return res.status(404).json({ msg: "Not Found" });
+
     Article.belongsTo(Users, { foreignKey: "publisherId" });
     const data = await Article.findAll({
       where: { title: formattedTitle },
@@ -96,10 +96,15 @@ export const getArticleByTitle = async (req, res) => {
         as: "user", // alias untuk model Users
         required: false, // menggunakan LEFT OUTER JOIN
         attributes: ["username"],
+        where,
       },
       order: [["createdAt", "desc"]],
     });
 
+    console.log(data);
+    if (data.length === 0) {
+      return res.status(404).json({ msg: "Not Found" });
+    }
     return res.status(200).json({ data });
   } catch (error) {
     console.log(error);
@@ -136,5 +141,45 @@ export const showImage = async (req, res) => {
     res.sendFile(imagePath);
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getArticleById = async (req, res) => {
+  try {
+    const { id,page } = req.params;
+    if (!id || !validator.isNumeric(id)) return res.status(400).json({ msg: "Id Harus Berupa Angka" });
+    if (!page || !validator.isNumeric(page)) return res.status(400).json({ msg: "page Harus Berupa Angka" });
+
+    const limit = 10;
+
+    const data = await Article.findAndCountAll({
+      order: [["createdAt", "desc"]],
+      attributes: [
+        "artikelId",
+        "title",
+        "content",
+        "createdAt",
+        "image",
+        "kategori",
+      ],
+      limit:limit,
+      offset:(page -1) * limit,
+      include: {
+        model: Users,
+        as: "user",
+        attributes: ["username"],
+      },
+    });
+    const totalPages = Math.ceil(data.count / limit);
+    if (data) {
+      return res.status(200).json({
+        totalPages: totalPages,
+        currentPage: parseInt(page),
+        data: data.rows,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: "Internal Server Error" });
   }
 };

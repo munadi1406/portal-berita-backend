@@ -75,12 +75,7 @@ export const getArticleByTitle = async (req, res) => {
       return res.status(400).json({ msg: "Title tidak valid" });
 
     const formattedTitle = title.split("-").join(" ");
-    const formattedTitleWithoutSpaces = formattedTitle.replace(/\s/g, "");
 
-    if (!formattedTitleWithoutSpaces)
-      return res.status(404).json({ msg: "Not Found" });
-
-    Article.belongsTo(Users, { foreignKey: "publisherId" });
     const data = await Article.findAll({
       where: { title: formattedTitle },
       attributes: [
@@ -96,12 +91,9 @@ export const getArticleByTitle = async (req, res) => {
         as: "user", // alias untuk model Users
         required: false, // menggunakan LEFT OUTER JOIN
         attributes: ["username"],
-        where,
       },
       order: [["createdAt", "desc"]],
     });
-
-    console.log(data);
     if (data.length === 0) {
       return res.status(404).json({ msg: "Not Found" });
     }

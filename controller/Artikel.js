@@ -9,7 +9,7 @@ export const getArticle = async (req, res) => {
     const { page } = req.params;
     if (!validator.isNumeric(page))
       return res.status(500).json({ msg: "Parameter Harus Angka" });
-    const limit = 10;
+    const limit = 9;
     const data = await Article.findAndCountAll({
       offset: (page - 1) * limit,
       limit: limit,

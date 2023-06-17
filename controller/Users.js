@@ -103,9 +103,11 @@ export const auth = async (req, res) => {
     const idUsers = authCheck.id;
     const username = authCheck.username;
     const emaill = authCheck.email;
+    const role = authCheck.role
+    
 
     const accessToken = jwt.sign(
-      { idUsers, username, emaill },
+      { idUsers, username, emaill,role },
       accessTokenKey,
       {
         expiresIn: "20s",
@@ -117,7 +119,7 @@ export const auth = async (req, res) => {
       jwtCheck = jwt.verify(authCheck.refresh_token, refreshTokenKey);
       refreshToken = authCheck.refresh_token;
     } catch (error) {
-      refreshToken = jwt.sign({ idUsers, username, emaill }, refreshTokenKey, {
+      refreshToken = jwt.sign({ idUsers, username, emaill,role }, refreshTokenKey, {
         expiresIn: "5d",
       });
       await Users.update(
@@ -129,6 +131,7 @@ export const auth = async (req, res) => {
         }
       );
     }
+
     return res.status(200).json({ accessToken,refreshToken });
   } catch (error) {
     return res.status(500).json({msg:"internal server error"})

@@ -40,10 +40,10 @@ export const insertArticke = async (req, res) => {
     if (!prolog || !validator.isAscii(prolog))
       return res.status(400).json({ msg: "Prolog tidak valid" });
     if (!content) return res.status(400).json({ msg: "Content Harus Di Isi" });
-    if (!kategori || !validator.isAlpha(kategori.replace(",", "")))
+    if (!kategori || !validator.isAscii(kategori))
       return res
         .status(400)
-        .json({ msg: "Kategori Hanya Berupa Huruf dan Tanda Koma" });
+        .json({ msg: "Masukkan Kategori" });
     if (!image || !validator.isMimeType(image.mimetype))
       return res.status(400).json({ msg: "Masukkan Gambar Yang valid" });
 

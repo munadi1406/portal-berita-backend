@@ -20,6 +20,9 @@ const Users = db.define(
     password: {
       type: DataTypes.TEXT,
     },
+    role:{
+      type:DataTypes.STRING
+    },
     refresh_token: {
       type: DataTypes.TEXT,
     },

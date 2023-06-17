@@ -103,7 +103,7 @@ export const auth = async (req, res) => {
     const idUsers = authCheck.id;
     const username = authCheck.username;
     const emaill = authCheck.email;
-    const role = authCheck.role
+    const role = authCheck.role;
     
 
     const accessToken = jwt.sign(

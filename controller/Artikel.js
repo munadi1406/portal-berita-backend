@@ -139,13 +139,9 @@ export const showImage = async (req, res) => {
 
 export const getArticleById = async (req, res) => {
   try {
-    const { id,page } = req.params;
+    const { id } = req.params;
     if (!id || !validator.isNumeric(id)) return res.status(400).json({ msg: "Id Harus Berupa Angka" });
-    if (!page || !validator.isNumeric(page)) return res.status(400).json({ msg: "page Harus Berupa Angka" });
-
-    const limit = 10;
-
-    const data = await Article.findAndCountAll({
+    const data = await Article.findAll({
       order: [["createdAt", "desc"]],
       attributes: [
         "artikelId",
@@ -155,8 +151,6 @@ export const getArticleById = async (req, res) => {
         "image",
         "kategori",
       ],
-      limit:limit,
-      offset:(page -1) * limit,
       include: {
         model: Users,
         as: "user",
@@ -166,12 +160,9 @@ export const getArticleById = async (req, res) => {
         publisherId:id
       },
     });
-    const totalPages = Math.ceil(data.count / limit);
     if (data) {
       return res.status(200).json({
-        totalPages: totalPages,
-        currentPage: parseInt(page),
-        data: data.rows,
+        data: data,
       });
     }
   } catch (error) {

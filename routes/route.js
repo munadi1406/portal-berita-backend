@@ -31,7 +31,7 @@ route.get("/artikelpost/:page", getArticle);
 route.get("/image/:image",showImage)
 route.delete("/artikel/:artikelId", deleteArticle);
 route.get("/artikel/:title", getArticleByTitle);
-route.get("/artikelById/:id/:page", getArticleById);
+route.get("/artikelById/:id", getArticleById);
 route.get("/artikelByKategori/:kategori/:page", getArticleByKategori);
 
 

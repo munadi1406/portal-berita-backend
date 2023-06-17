@@ -3,6 +3,7 @@ import Article from "../models/artikel.js";
 import Users from "../models/usersModel.js";
 import validator from "validator";
 import fs from "fs";
+import { Op } from "sequelize";
 
 export const getArticle = async (req, res) => {
   try {
@@ -145,6 +146,56 @@ export const getArticleById = async (req, res) => {
     const limit = 10;
 
     const data = await Article.findAndCountAll({
+      order: [["createdAt", "desc"]],
+      attributes: [
+        "artikelId",
+        "title",
+        "content",
+        "createdAt",
+        "image",
+        "kategori",
+      ],
+      limit:limit,
+      offset:(page -1) * limit,
+      include: {
+        model: Users,
+        as: "user",
+        attributes: ["username"],
+      },
+      where:{
+        publisherId:id
+      },
+    });
+    const totalPages = Math.ceil(data.count / limit);
+    if (data) {
+      return res.status(200).json({
+        totalPages: totalPages,
+        currentPage: parseInt(page),
+        data: data.rows,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
+
+
+
+export const getArticleByKategori = async (req, res) => {
+  try {
+    const { kategori ,page} = req.params;
+    if (!kategori || !validator.isAlpha(kategori)) return res.status(400).json({ msg: "kategori harus berupa huruf" });
+    if (!page || !validator.isNumeric(page)) return res.status(400).json({ msg: "page Harus Berupa Angka" });
+
+    const limit = 10;
+    const data = await Article.findAndCountAll({
+      where: {
+        kategori: {
+          [Op.like]: `%${kategori}%`,
+        },
+      },
       order: [["createdAt", "desc"]],
       attributes: [
         "artikelId",

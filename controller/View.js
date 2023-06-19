@@ -24,12 +24,14 @@ export const getViewByIdUser = async (req, res) => {
     const data = await View.findAll({
       attributes: [
         [Sequelize.fn("COUNT", Sequelize.col("view.artikelId")), "jumlah_view"],
+        [Sequelize.col("art.artikelId"), "artikelId"],
+    [Sequelize.col("art.title"), "title"]
       ],
       include: [
         {
           model: Article,
           as: "art",
-          attributes: ['artikelId','title'], 
+          attributes: [],
           where: {
             publisherId: id,
           },

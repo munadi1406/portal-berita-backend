@@ -1,8 +1,10 @@
-import { getUsers ,auth,register} from "../controller/Users.js";
+import { getUsers ,auth,register, deleteUsers} from "../controller/Users.js";
 import { getArticle, insertArticke,getArticleByTitle, deleteArticle, showImage, getArticleById, getArticleByKategori } from "../controller/Artikel.js";
 import Express from "express";
 import multer from "multer";
 import { deleteKategori, getKategori, insertKategori, updateKategori } from "../controller/Kategori.js";
+import { addView, getViewByIdUser, getViewByMonth } from "../controller/View.js";
+import { addLog, getLog } from "../controller/Log.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -23,6 +25,7 @@ const route = Express.Router();
 
 
 route.get("/users", getUsers);
+route.delete("/users/:idUsers", deleteUsers);
 route.post('/login',auth);
 route.post('/register',register);
 
@@ -40,5 +43,11 @@ route.post('/kategori',insertKategori)
 route.put('/kategori',updateKategori)
 route.delete('/kategori/:id',deleteKategori)
 
+route.get('/view/:id',getViewByIdUser)
+route.get('/viewByMonth/:id',getViewByMonth)
+route.post('/view',addView)
+
+route.get('/log',getLog)
+route.post('/log',addLog)
 
 export default route;

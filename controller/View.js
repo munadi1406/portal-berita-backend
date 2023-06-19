@@ -6,7 +6,7 @@ import { Sequelize } from "sequelize";
 export const addView = async (req, res) => {
   try {
     const { artikelId, date } = req.body;
-    if (!validator.isNumeric(artikelId))
+    if (!validator.isNumeric(artikelId.toString()))
       return res.status(400).json({ msg: "artiel id harus berupa angka" });
 
     const insert = await View.create({ artikelId, date });

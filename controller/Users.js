@@ -69,8 +69,8 @@ export const register = async (req, res) => {
     res.json({ msg: "register berhasil" });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ msg: "Terjadi kesalahan" });
   }
-  res.status(500).json({ msg: "Terjadi kesalahan" });
 };
 
 export const auth = async (req, res) => {
@@ -135,5 +135,16 @@ export const auth = async (req, res) => {
     return res.status(200).json({ accessToken,refreshToken });
   } catch (error) {
     return res.status(500).json({msg:"internal server error"})
+  }
+};
+
+
+export const deleteUsers = async (req, res) => {
+  try {
+    const { idUsers } = req.params;
+    await Users.destroy({ where: { id: idUsers } });
+    return res.status(200).json({message: "User berhasil dihapus" });
+  } catch (error) {
+    return res.status(500).json({  message: "Internal Server Error" });
   }
 };

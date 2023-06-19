@@ -5,7 +5,7 @@ import validator from "validator";
 
 export const getUsers = async (req, res) => {
   try {
-    const data = await Users.findAll();
+    const data = await Users.findAll({attributes:['id','username','email','role']});
     if (data) {
       return res.status(200).json({ data });
     } else {

@@ -3,7 +3,7 @@ import { getArticle, insertArticke,getArticleByTitle, deleteArticle, showImage, 
 import Express from "express";
 import multer from "multer";
 import { deleteKategori, getKategori, insertKategori, updateKategori } from "../controller/Kategori.js";
-import { addView, getViewByIdUser, getViewByMonth } from "../controller/View.js";
+import { addView, getViewByIdUser, getViewByMonth, totalPostAndView } from "../controller/View.js";
 import { addLog, getLog } from "../controller/Log.js";
 
 const storage = multer.diskStorage({
@@ -46,6 +46,7 @@ route.delete('/kategori/:id',deleteKategori)
 route.get('/view/:id',getViewByIdUser)
 route.get('/viewByMonth/:id',getViewByMonth)
 route.post('/view',addView)
+route.get('/totalpostandview/:idUsers',totalPostAndView)
 
 route.get('/log',getLog)
 route.post('/log',addLog)

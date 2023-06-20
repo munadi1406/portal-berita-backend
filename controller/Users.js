@@ -5,14 +5,17 @@ import validator from "validator";
 
 export const getUsers = async (req, res) => {
   try {
-    const data = await Users.findAll({attributes:['id','username','email','role']});
+    const data = await Users.findAll({
+      attributes: ["id", "username", "email", "role"],
+      order:[['createdAt','desc']]
+    });
     if (data) {
       return res.status(200).json({ data });
     } else {
-      return res.status(404).json({msg:"Not Found"});
+      return res.status(404).json({ msg: "Not Found" });
     }
   } catch (error) {
-    return res.status(500).json({msg:"Koneksi Error"})
+    return res.status(500).json({ msg: "Internal server error" });
   }
 };
 
@@ -24,11 +27,9 @@ export const register = async (req, res) => {
       !validator.isLength(username, { min: 5, max: 50 }) ||
       !validator.matches(username, /^[a-zA-Z0-9_]{5,50}$/)
     )
-      return res
-        .status(400)
-        .json({
-          msg: "Nama harus terdiri dari 5 karakter atau lebih dan tidak boleh mengandung angka atau karakter khusus",
-        });
+      return res.status(400).json({
+        msg: "Nama harus terdiri dari 5 karakter atau lebih dan tidak boleh mengandung angka atau karakter khusus",
+      });
     const nameExist = await Users.findOne({ where: { username } });
     if (nameExist) return res.status(400).json({ msg: "Nama Tidak Tersedia" });
 
@@ -89,7 +90,10 @@ export const auth = async (req, res) => {
     if (["tk", "ml", "ga", "cf", "gq"].includes(domain))
       return res.status(400).json({ msg: "Domain email tidak valid" });
 
-    if(!password)return res.status(500).json({msg:"Password Yang Anda Masukkan Kosong"})
+    if (!password)
+      return res
+        .status(500)
+        .json({ msg: "Password Yang Anda Masukkan Kosong" });
 
     const authCheck = await Users.findOne({ where: { email } });
     if (!authCheck)
@@ -104,10 +108,9 @@ export const auth = async (req, res) => {
     const username = authCheck.username;
     const emaill = authCheck.email;
     const role = authCheck.role;
-    
 
     const accessToken = jwt.sign(
-      { idUsers, username, emaill,role },
+      { idUsers, username, emaill, role },
       accessTokenKey,
       {
         expiresIn: "20s",
@@ -119,9 +122,13 @@ export const auth = async (req, res) => {
       jwtCheck = jwt.verify(authCheck.refresh_token, refreshTokenKey);
       refreshToken = authCheck.refresh_token;
     } catch (error) {
-      refreshToken = jwt.sign({ idUsers, username, emaill,role }, refreshTokenKey, {
-        expiresIn: "5d",
-      });
+      refreshToken = jwt.sign(
+        { idUsers, username, emaill, role },
+        refreshTokenKey,
+        {
+          expiresIn: "5d",
+        }
+      );
       await Users.update(
         { refresh_token: refreshToken },
         {
@@ -132,19 +139,18 @@ export const auth = async (req, res) => {
       );
     }
 
-    return res.status(200).json({ accessToken,refreshToken });
+    return res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
-    return res.status(500).json({msg:"internal server error"})
+    return res.status(500).json({ msg: "internal server error" });
   }
 };
-
 
 export const deleteUsers = async (req, res) => {
   try {
     const { idUsers } = req.params;
     await Users.destroy({ where: { id: idUsers } });
-    return res.status(200).json({message: "User berhasil dihapus" });
+    return res.status(200).json({ message: "User berhasil dihapus" });
   } catch (error) {
-    return res.status(500).json({  message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };

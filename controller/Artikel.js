@@ -36,15 +36,21 @@ export const insertArticke = async (req, res) => {
     const baseUrl = process.env.BASE_URL;
     if (!publisherId || !validator.isNumeric(publisherId))
       return res.status(400).json({ msg: "Publisher id harus angka" });
-    if (!title || !validator.isAscii(title.replace(/\s/g, "")))
-      return res.status(400).json({ msg: "Title tidak valid" });
+    if (
+      !title ||
+      !validator.isAscii(title.replace(/\s/g, "")) ||
+      title.includes("-")
+    )
+      return res
+        .status(400)
+        .json({
+          msg: "Judul tidak valid. Judul tidak boleh kosong, mengandung karakter non-ASCII, atau mengandung karakter '-'",
+        });
     if (!prolog || !validator.isAscii(prolog))
       return res.status(400).json({ msg: "Prolog tidak valid" });
     if (!content) return res.status(400).json({ msg: "Content Harus Di Isi" });
     if (!kategori || !validator.isAscii(kategori))
-      return res
-        .status(400)
-        .json({ msg: "Masukkan Kategori" });
+      return res.status(400).json({ msg: "Masukkan Kategori" });
     if (!image || !validator.isMimeType(image.mimetype))
       return res.status(400).json({ msg: "Masukkan Gambar Yang valid" });
 
@@ -140,14 +146,17 @@ export const showImage = async (req, res) => {
 export const getArticleById = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id || !validator.isNumeric(id)) return res.status(400).json({ msg: "Id Harus Berupa Angka" });
+    if (!id || !validator.isNumeric(id))
+      return res.status(400).json({ msg: "Id Harus Berupa Angka" });
     const data = await Article.findAll({
       order: [["createdAt", "desc"]],
       attributes: [
         "artikelId",
         "title",
+        "prolog",
         "content",
         "createdAt",
+        "updatedAt",
         "image",
         "kategori",
       ],
@@ -156,8 +165,8 @@ export const getArticleById = async (req, res) => {
         as: "user",
         attributes: ["username"],
       },
-      where:{
-        publisherId:id
+      where: {
+        publisherId: id,
       },
     });
     if (data) {
@@ -171,14 +180,13 @@ export const getArticleById = async (req, res) => {
   }
 };
 
-
-
-
 export const getArticleByKategori = async (req, res) => {
   try {
-    const { kategori ,page} = req.params;
-    if (!kategori || !validator.isAlpha(kategori)) return res.status(400).json({ msg: "kategori harus berupa huruf" });
-    if (!page || !validator.isNumeric(page)) return res.status(400).json({ msg: "page Harus Berupa Angka" });
+    const { kategori, page } = req.params;
+    if (!kategori || !validator.isAlpha(kategori))
+      return res.status(400).json({ msg: "kategori harus berupa huruf" });
+    if (!page || !validator.isNumeric(page))
+      return res.status(400).json({ msg: "page Harus Berupa Angka" });
 
     const limit = 10;
     const data = await Article.findAndCountAll({
@@ -195,10 +203,10 @@ export const getArticleByKategori = async (req, res) => {
         "createdAt",
         "image",
         "kategori",
-        "prolog"
+        "prolog",
       ],
-      limit:limit,
-      offset:(page -1) * limit,
+      limit: limit,
+      offset: (page - 1) * limit,
       include: {
         model: Users,
         as: "user",

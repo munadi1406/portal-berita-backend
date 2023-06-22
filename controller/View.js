@@ -1,7 +1,7 @@
 import View from "../models/view.js";
 import validator from "validator";
 import Article from "../models/artikel.js";
-import { Model, Sequelize } from "sequelize";
+import {  Sequelize } from "sequelize";
 
 export const addView = async (req, res) => {
   try {
@@ -50,7 +50,7 @@ export const getViewByIdUser = async (req, res) => {
 export const getViewByMonth = async (req, res) => {
   try {
     const { id } = req.params;
-
+  console.log({id})
     const data = await View.findAll({
       attributes: [
         [Sequelize.fn("MONTH", Sequelize.col("date")), "bulan"],
@@ -71,13 +71,14 @@ export const getViewByMonth = async (req, res) => {
         new Date().getFullYear()
       ),
       group: [Sequelize.fn("MONTH", Sequelize.col("date"))],
-      order: [["date", "desc"]],
+      order: [["bulan", "desc"]],
       limit: 7,
       raw: true,
     });
 
     return res.status(200).json({ data });
   } catch (error) {
+    console.log({error})
     return res.status(500).json({ msg: "internal server error" });
   }
 };

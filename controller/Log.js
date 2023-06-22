@@ -5,9 +5,9 @@ import Log from '../models/log.js'
 
 export const addLog = async (req,res)=>{
     try {
-        const {ipAddress,browser,currentPage} = req.body
-        if(!ipAddress ||!validator.isIP(ipAddress) || !browser || !currentPage) return res.status(400).json({msg:"Pastikan Semua Sudah Terisi"})
-        const insertLog = await Log.create({ipAddress,browser,currentPage})
+        const {ipAddress,browser,currentPage,city,region,country} = req.body
+        if(!ipAddress ||!validator.isIP(ipAddress) || !browser || !currentPage || !city || !region || !country) return res.status(400).json({msg:"Pastikan Semua Sudah Terisi"})
+        const insertLog = await Log.create({ipAddress,browser,currentPage,city,region,country})
         if(!insertLog) return res.status(400).json({msg:"log gagal di tambahkan"})
         return res.status(201).json({success:true})
     } catch (error) {

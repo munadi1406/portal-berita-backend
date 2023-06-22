@@ -41,11 +41,14 @@ export const insertArticke = async (req, res) => {
       !validator.isAscii(title.replace(/\s/g, "")) ||
       title.includes("-")
     )
+      return res.status(400).json({
+        msg: "Judul tidak valid. Judul tidak boleh kosong, mengandung karakter non-ASCII, atau mengandung karakter '-'",
+      });
+    const cekTitle = await Article.findOne({ where: { title } });
+    if (cekTitle)
       return res
         .status(400)
-        .json({
-          msg: "Judul tidak valid. Judul tidak boleh kosong, mengandung karakter non-ASCII, atau mengandung karakter '-'",
-        });
+        .json({ msg: "Title Tidak Tersedia, Silahkan Cari Title Lain" });
     if (!prolog || !validator.isAscii(prolog))
       return res.status(400).json({ msg: "Prolog tidak valid" });
     if (!content) return res.status(400).json({ msg: "Content Harus Di Isi" });
@@ -222,7 +225,66 @@ export const getArticleByKategori = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
+export const updateArticle = async (req, res) => {
+  try {
+    const { artikelId, title, prolog, content, kategori } = req.body;
+    const image = req.file;
+    const baseUrl = process.env.BASE_URL;
+    if (!artikelId || !validator.isNumeric(artikelId))
+      return res.status(400).json({ msg: "artikelId harus angka" });
+    if (
+      !title ||
+      !validator.isAscii(title.replace(/\s/g, "")) ||
+      title.includes("-")
+    )
+      return res.status(400).json({
+        msg: "Judul tidak valid. Judul tidak boleh kosong, mengandung karakter non-ASCII, atau mengandung karakter '-'",
+      });
+    const cekTitle = await Article.findOne({ where: { title } });
+    if (cekTitle)
+      return res
+        .status(400)
+        .json({ msg: "Title Tidak Tersedia, Silahkan Cari Title Lain" });
+    // console.log(cekTitle)
+    if (!prolog || !validator.isAscii(prolog))
+      return res.status(400).json({ msg: "Prolog tidak valid" });
+    if (!content) return res.status(400).json({ msg: "Content Harus Di Isi" });
+    if (!kategori || !validator.isAscii(kategori))
+      return res.status(400).json({ msg: "Masukkan Kategori" });
+    if(image){
+      const imagePath = image ? `${baseUrl}/image/${image.filename}` : null;
+      const formattedImagePath = imagePath ? imagePath.replace(/\\/g, "/") : null;
+      const data = {
+        title,
+        content,
+        image: formattedImagePath,
+        kategori,
+        prolog,
+      };
+      const checkImage = await Article.findOne({where:{artikelId}})
+      const deleteImage = path.basename(checkImage.image)
+      fs.unlink(`uploads/${deleteImage}`, (err) => {
+        if (err) { 
+        }
+      });
+      await Article.update(data,{where:{artikelId}})
+      return res.status(200).json({status:true,msg:"Artikel Berhasil Di Update"})
+    }else{
+      const data = {
+        title,
+        content,
+        kategori,
+        prolog,
+      };
+      await Article.update(data,{where:{artikelId}})
+      return res.status(200).json({status:true,msg:"Artikel Berhasil Di Update"})
+    }
+  } catch (error) {
+    console.log(error)
     return res.status(500).json({ msg: "Internal Server Error" });
   }
 };

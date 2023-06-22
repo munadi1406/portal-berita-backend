@@ -23,6 +23,18 @@ const Log = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    region: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   },{
     timestamps:false,
     freezeTableName: true,

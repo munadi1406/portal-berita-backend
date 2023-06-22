@@ -11,6 +11,7 @@ export const addLog = async (req,res)=>{
         if(!insertLog) return res.status(400).json({msg:"log gagal di tambahkan"})
         return res.status(201).json({success:true})
     } catch (error) {
+      console.log(error)
         return res.status(500).json({msg:"internal server error"})
     }
 }
@@ -19,7 +20,7 @@ export const addLog = async (req,res)=>{
 
 export const getLog = async (req,res)=>{
     try {
-       const data = await Log.findAll();
+       const data = await Log.findAll({order:[['id','desc']]});
        return res.status(200).json({data})
     } catch (error) {
         console.log(error)

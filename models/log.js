@@ -3,7 +3,7 @@ import { db } from '../config/db.js';
 // File koneksi Sequelize Anda
 
 const Log = db.define(
-  'Log',
+  'log',
   {
     id: {
       type: DataTypes.INTEGER,

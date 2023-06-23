@@ -7,10 +7,10 @@ export const getUsers = async (req, res) => {
   try {
     const data = await Users.findAll({
       attributes: ["id", "username", "email", "role"],
-      order:[['createdAt','desc']]
+      order: [["createdAt", "desc"]],
     });
     if (data) {
-      return res.status(200).json({ data });
+      return res.status(200).json({ status: true, data });
     } else {
       return res.status(404).json({ msg: "Not Found" });
     }
@@ -67,10 +67,10 @@ export const register = async (req, res) => {
       email,
       password: hashPassword,
     });
-    res.json({ msg: "register berhasil" });
+    res.status(201).json({ status: true, msg: "register berhasil" });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ msg: "Terjadi kesalahan" });
+    res.status(500).json({ msg: "Internal Server Error" });
   }
 };
 
@@ -116,28 +116,21 @@ export const auth = async (req, res) => {
         expiresIn: "20s",
       }
     );
-    let jwtCheck;
-    let refreshToken;
-    try {
-      jwtCheck = jwt.verify(authCheck.refresh_token, refreshTokenKey);
-      refreshToken = authCheck.refresh_token;
-    } catch (error) {
-      refreshToken = jwt.sign(
-        { idUsers, username, emaill, role },
-        refreshTokenKey,
-        {
-          expiresIn: "5d",
-        }
-      );
-      await Users.update(
-        { refresh_token: refreshToken },
-        {
-          where: {
-            id: idUsers,
-          },
-        }
-      );
-    }
+    const refreshToken = jwt.sign(
+      { idUsers, username, emaill, role },
+      refreshTokenKey,
+      {
+        expiresIn: "5d",
+      }
+    );
+    await Users.update(
+      { refresh_token: refreshToken },
+      {
+        where: {
+          id: idUsers,
+        },
+      }
+    );
 
     return res.status(200).json({ accessToken, refreshToken });
   } catch (error) {
@@ -149,8 +142,107 @@ export const deleteUsers = async (req, res) => {
   try {
     const { idUsers } = req.params;
     await Users.destroy({ where: { id: idUsers } });
-    return res.status(200).json({ message: "User berhasil dihapus" });
+    return res
+      .status(200)
+      .json({ status: true, message: "User berhasil dihapus" });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const updateRoleUsers = async (req, res) => {
+  try {
+    const { idUsers, role } = req.body;
+    if (!idUsers || !validator.isNumeric(idUsers))
+      return res
+        .status(400)
+        .json({ msg: "Pastikan id Users Tidak Kosong Dan Hanya Berupa Angka" });
+    if (!role || !validator.isAlpha(role))
+      return res.status(400).json({
+        msg: "Pastikan Role Tidak Kosong Dan Hanya Berupa Karakter Huruf",
+      });
+    const update = await Users.update(
+      { role },
+      {
+        where: {
+          id: idUsers,
+        },
+      }
+    );
+    return res
+      .status(200)
+      .json({ status: true, msg: "Role User Berhasil Di Update" });
+  } catch (error) {
+    return res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+export const updateUsernameUsers = async (req, res) => {
+  try {
+    const { idUsers, username } = req.body;
+    if (!idUsers || !validator.isNumeric(idUsers))
+      return res
+        .status(400)
+        .json({ msg: "Pastikan id Users Tidak Kosong Dan Hanya Berupa Angka" });
+    if (
+      !username ||
+      !validator.isLength(username, { min: 5, max: 50 }) ||
+      !validator.matches(username, /^[a-zA-Z0-9_]{5,50}$/)
+    )
+      return res.status(400).json({
+        msg: "Nama harus terdiri dari 5 karakter atau lebih dan tidak boleh mengandung angka atau karakter khusus",
+      });
+    const nameExist = await Users.findOne({ where: { username } });
+    if (nameExist) return res.status(400).json({ msg: "Nama Tidak Tersedia" });
+
+    await Users.update({ username }, { where: { id: idUsers } });
+
+    return res
+      .status(200)
+      .json({ status: true, msg: "Username Berhasil Di Update" });
+  } catch (error) {
+    return res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+export const updatePasswordUsers = async (req, res) => {
+  try {
+    const { idUsers, password } = req.body;
+    if (!idUsers || !validator.isNumeric(idUsers))
+      return res
+        .status(400)
+        .json({ msg: "Pastikan id Users Tidak Kosong Dan Hanya Berupa Angka" });
+    if (!validator.isLength(password, { min: 8, max: 50 }))
+      return res
+        .status(400)
+        .json({ msg: "Password Minimal 8 Karakter Dan Maksimal 50 Karakter" });
+    if (!password || !validator.isStrongPassword(password))
+      return res.status(400).json({
+        msg: "Password harus terdiri dari huruf besar, huruf kecil, angka, dan karakter khusus",
+      });
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    await Users.update({ password: hashPassword }, { where: { id: idUsers } });
+
+    return res
+      .status(200)
+      .json({ status: true, msg: "Username Berhasil Di Update" });
+  } catch (error) {
+    return res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+export const logout = async (req,res)=>{
+  try {
+    const {id} = req.body
+    if(!id || !validator.isNumeric(id)) return res.status(400).json({msg:"Pastikan Id Users Tidak Kosong dan Hanya Angak"})
+
+    await Users.update({refreshToken:null},{where:{id}})
+    return res.status(200).json({status:true})
+
+  } catch (error) {
+    return res.status(500).json({ msg: "internal server error" });
+  }
+}

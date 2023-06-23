@@ -107,3 +107,39 @@ export const totalPostAndView = async (req, res) => {
     return res.status(500).json({ msg: "internal server error" });
   }
 };
+
+export const getViewByWeek = async (req, res) => {
+  try {
+    const { id } = req.params;
+  console.log({id})
+    const data = await View.findAll({
+      attributes: [
+        [Sequelize.fn('DAYOFWEEK', Sequelize.col('date')), 'hari'],
+        [Sequelize.fn("COUNT", Sequelize.col("view.artikelId")), "jumlah_view"],
+      ],
+      include: [
+        {
+          model: Article,
+          as: "art",
+          attributes: [],
+          where: {
+            publisherId: id,
+          },
+        },
+      ],
+      where: Sequelize.where(
+        Sequelize.fn('WEEK', Sequelize.col('date')),
+        Sequelize.fn('WEEK', new Date(), 1)
+      ),
+      group: [Sequelize.fn("DAYOFWEEK", Sequelize.col("date"))],
+      order: [["hari", "desc"]],
+      limit: 7,
+      raw: true,
+    });
+
+    return res.status(200).json({ data });
+  } catch (error) {
+    console.log({error})
+    return res.status(500).json({ msg: "internal server error" });
+  }
+};

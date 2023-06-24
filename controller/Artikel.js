@@ -244,11 +244,11 @@ export const updateArticle = async (req, res) => {
       return res.status(400).json({
         msg: "Judul tidak valid. Judul tidak boleh kosong, mengandung karakter non-ASCII, atau mengandung karakter '-'",
       });
-    const cekTitle = await Article.findOne({ where: { title } });
-    if (cekTitle)
-      return res
-        .status(400)
-        .json({ msg: "Title Tidak Tersedia, Silahkan Cari Title Lain" });
+    // const cekTitle = await Article.findOne({ where: { title } });
+    // if (cekTitle)
+    //   return res
+    //     .status(400)
+    //     .json({ msg: "Title Tidak Tersedia, Silahkan Cari Title Lain" });
     // console.log(cekTitle)
     if (!prolog || !validator.isAscii(prolog))
       return res.status(400).json({ msg: "Prolog tidak valid" });

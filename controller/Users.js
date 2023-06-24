@@ -237,7 +237,7 @@ export const updatePasswordUsers = async (req, res) => {
 export const logout = async (req,res)=>{
   try {
     const {id} = req.body
-    if(!id || !validator.isNumeric(id)) return res.status(400).json({msg:"Pastikan Id Users Tidak Kosong dan Hanya Angak"})
+    if(!id || !validator.isNumeric(id.toString())) return res.status(400).json({msg:"Pastikan Id Users Tidak Kosong dan Hanya Angak"})
 
     await Users.update({refreshToken:null},{where:{id}})
     return res.status(200).json({status:true})

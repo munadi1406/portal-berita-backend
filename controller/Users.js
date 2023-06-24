@@ -180,7 +180,7 @@ export const updateRoleUsers = async (req, res) => {
 export const updateUsernameUsers = async (req, res) => {
   try {
     const { idUsers, username } = req.body;
-    if (!idUsers || !validator.isNumeric(idUsers))
+    if (!idUsers || !validator.isNumeric(idUsers.toString()))
       return res
         .status(400)
         .json({ msg: "Pastikan id Users Tidak Kosong Dan Hanya Berupa Angka" });
@@ -208,7 +208,7 @@ export const updateUsernameUsers = async (req, res) => {
 export const updatePasswordUsers = async (req, res) => {
   try {
     const { idUsers, password } = req.body;
-    if (!idUsers || !validator.isNumeric(idUsers))
+    if (!idUsers || !validator.isNumeric(idUsers.toString()))
       return res
         .status(400)
         .json({ msg: "Pastikan id Users Tidak Kosong Dan Hanya Berupa Angka" });

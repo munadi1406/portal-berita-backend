@@ -1,8 +1,8 @@
 import { Sequelize } from "sequelize";
 
 
-export const db = new Sequelize('portalberita', 'root', '', {
-  host: 'localhost',
+export const db = new Sequelize('portalberita', 'munadi1406', 'munadi1406!', {
+  host: 'db4free.net',
   dialect: 'mysql',
   pool: {
     max: 5,
@@ -20,7 +20,6 @@ const connection = async ()=>{
     await db.authenticate()
     console.log("database terkoneksi")
   }catch(error){
-    
   }
 }
 

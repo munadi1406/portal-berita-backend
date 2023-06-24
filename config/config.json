@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "root",
-    "password": "",
+    "username": "munadi1406",
+    "password": "munadi1406!",
     "database": "portalberita",
-    "host": "localhost",
+    "host": "db4free.net",
     "dialect": "mysql"
   },
   "test": {

@@ -47,15 +47,21 @@ export const deleteKategori = async (req,res)=>{
 export const updateKategori = async (req,res) =>{
     try {
         const {id,kategori } = req.body
-        if(!validator.isNumeric(id)) return res.status(500).json({msg:"id yang anda masukkan bukan angka"})
-        if(!validator.isAlpha(kategori)) return res.status(500).json({msg:"Kategori Tidak Boleh Mengandung Angka,Spasi,Dan Karekter Khusus"})
+        if(!id ||!validator.isNumeric(id.toString())) return res.status(500).json({msg:"id yang anda masukkan bukan angka"})
+        if(!kategori || !validator.isAlpha(kategori)) return res.status(500).json({msg:"Kategori Tidak Boleh Mengandung Angka,Spasi,Dan Karekter Khusus"})
+
+
+        const kategoriCheck = await Kategori.findOne({where:{kategori}});
+        if(kategoriCheck) return res.status(400).json({msg:'kategori sudah ada'})
+        
         await Kategori.update({kategori},{
             where:{id}
         })
 
-        return res.status(201).json({msg:"Kategori Berhasil Di Di Update"})
+        return res.status(201).json({msg:"Kategori Berhasil Di Update"})
 
     } catch (error) {
+        console.log(error)
         return res.status(500).json({msg:"Internal Server Error"})
     }
 }

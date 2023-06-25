@@ -153,7 +153,7 @@ export const deleteUsers = async (req, res) => {
 export const updateRoleUsers = async (req, res) => {
   try {
     const { idUsers, role } = req.body;
-    if (!idUsers || !validator.isNumeric(idUsers))
+    if (!idUsers || !validator.isNumeric(idUsers.toString()))
       return res
         .status(400)
         .json({ msg: "Pastikan id Users Tidak Kosong Dan Hanya Berupa Angka" });

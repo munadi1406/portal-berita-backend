@@ -28,38 +28,38 @@ const route = Express.Router();
 
 
 route.get("/users",verifyToken, getUsers);
-route.delete("/users/:idUsers", deleteUsers);
-route.put("/usersrole", updateRoleUsers);
-route.put("/usersupdateusername", updateUsernameUsers);
-route.put("/usersupdatepassword", updatePasswordUsers);
+route.delete("/users/:idUsers",verifyToken ,deleteUsers);
+route.put("/usersrole", verifyToken,updateRoleUsers);
+route.put("/usersupdateusername", verifyToken,updateUsernameUsers);
+route.put("/usersupdatepassword", verifyToken,updatePasswordUsers);
 route.post('/login',auth);
 route.post('/register',register);
-route.post('/logout',logout);
+route.post('/logout',verifyToken,logout);
 
 route.post('/newaccesstoken',refreshToken)
 
-route.post("/artikel", upload.single("image"), insertArticke);
-route.put("/artikel", upload.single("image"), updateArticle);
-route.get("/artikelpost/:page", getArticle);
+route.post("/artikel", verifyToken,upload.single("image"), insertArticke);
+route.put("/artikel", verifyToken,upload.single("image"), updateArticle);
+route.get("/artikelpost/:page",getArticle);
 route.get("/image/:image",showImage)
-route.delete("/artikel/:artikelId", deleteArticle);
+route.delete("/artikel/:artikelId", verifyToken,deleteArticle);
 route.get("/artikel/:title", getArticleByTitle);
-route.get("/artikelById/:id", getArticleById);
+route.get("/artikelById/:id", verifyToken,getArticleById);
 route.get("/artikelByKategori/:kategori/:page", getArticleByKategori);
 
 
 route.get('/kategori',getKategori)
-route.post('/kategori',insertKategori)
-route.put('/kategori',updateKategori)
-route.delete('/kategori/:id',deleteKategori)
+route.post('/kategori',verifyToken,insertKategori)
+route.put('/kategori',verifyToken,updateKategori)
+route.delete('/kategori/:id',verifyToken,deleteKategori)
 
-route.get('/view/:id',getViewByIdUser)
-route.get('/viewByMonth/:id',getViewByMonth)
-route.get('/viewByWeek/:id',getViewByWeek)
-route.post('/view',addView)
-route.get('/totalpostandview/:idUsers',totalPostAndView)
+route.get('/view/:id',verifyToken,getViewByIdUser)
+route.get('/viewByMonth/:id',verifyToken,getViewByMonth)
+route.get('/viewByWeek/:id',verifyToken,getViewByWeek)
+route.post('/view',verifyToken,addView)
+route.get('/totalpostandview/:idUsers',verifyToken,totalPostAndView)
 
-route.get('/log/:page',getLog)
+route.get('/log/:page',verifyToken,getLog)
 route.post('/log',addLog)
 
 export default route;

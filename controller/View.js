@@ -97,16 +97,24 @@ export const totalPostAndView = async (req, res) => {
         }
       }],
     });
-    const today = new Date();
+const today = new Date()
     const viewsToday = await View.count({
-      where: {
-        artikelId: idUsers,
-        date: {
-          [Sequelize.Op.gte]: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-          [Sequelize.Op.lt]: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
-        },
-      },
-    });
+      include: [{ 
+        model: Article ,
+        as:'art',
+        attributes:[],
+        where:{
+          publisherId:idUsers
+        }
+      }],
+  where: {
+    date: {
+      [Sequelize.Op.gte]: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+      [Sequelize.Op.lt]: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+    }
+  }
+      
+});
 
     const data ={
       totalPost,

@@ -57,7 +57,7 @@ route.get('/view/:id',verifyToken,getViewByIdUser)
 route.get('/viewByMonth/:id',verifyToken,getViewByMonth)
 route.get('/viewByWeek/:id',verifyToken,getViewByWeek)
 route.post('/view',verifyToken,addView)
-route.get('/totalpostandview/:idUsers',totalPostAndView)
+route.get('/totalpostandview/:idUsers',verifyToken,totalPostAndView)
 
 route.get('/log/:page',verifyToken,getLog)
 route.post('/log',addLog)
